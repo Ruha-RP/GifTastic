@@ -1,5 +1,40 @@
 $(document).ready(function() {
 
+
+
+//***STEP 1: Displaying existing topics as buttons
+
+//Creating an Array which holds the subjects for the GIFs
+var topics = ["cat", "hamster", "pigeon"];
+
+//Creating the renderButtons function for displaying the topics in the array as buttons. 3 steps involved: (a)emptying the div, (b)for loop, (c)button creation
+function renderButtons() {
+
+	//emptying the div that will hold the contents, so as to prevent duplicates
+	$("#animalButtons").empty();
+
+	//Looping through each string in the array
+	for (i = 0; i < topics.length; i++) {
+
+		//dynamically creating a button for each string in the array
+		var x = $("<button>");
+
+		//giving the button a few properties: class, data-attribute and text based on the index
+		x.addClass("singleTopic");
+		x.attr("data-name", topics[i]);
+		x.text(topics[i]);
+
+		//adding the button to the div that was cleared earlier
+		$("#animalButtons").append(x);
+
+	};//closing th for loop
+
+};//closing the renderButton function
+
+
+
+//***STEP 2: Creating the on-click Function
+
 //Creation of an on-click event for the submit button, this will lead to the AJAX call being executed
 $("#addAnimal").on("click", function(event) {
 
@@ -8,71 +43,42 @@ $("#addAnimal").on("click", function(event) {
 
 
 
+//***STEP 3: Making the submit button: (a)convert user input to a button, (b)extract information from the Giphy API	
 
-//STEP 1: Making the submit button extract information from the Giphy API	
 
-
-	//Grabbing the user's input text, and putting the information in a new varibale called animal
+	//Grabbing the user's input text, trimming white space and putting the information in a new variable called animal
 	var animal = $('#animal-input').val().trim();
 
-	//Creating the query URL, which is one of the parameters of the AJAX call. Limited to 10 results
-	var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=AkFwbCSaIKXeFXXJc1BOIfByIy9ai35t&limit=10"
+	//pushing the user input that (from the div animal-input, which is now othe new variable defined above) into the topics array
+	topics.push(animal);
 
-	//the AJAX call
-	$.ajax({
-		url: queryURL,
-		method: "GET"
-	}).done(function(response) {
+	//calling the renderButtons function. This will ensure that the code for creating a new button runs
+	renderButtons();
 
-	//checking the response
-	console.log(response);
 
-	//displaying the JSON in the animal buttons div as a string
-	$("#animalButtons").text(JSON.stringify(response));
+	// //Creating the query URL, which is one of the parameters of the AJAX call. Limited to 10 results
+	// var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=AkFwbCSaIKXeFXXJc1BOIfByIy9ai35t&limit=10"
+
+	// //the AJAX call
+	// $.ajax({
+	// 	url: queryURL,
+	// 	method: "GET"
+	// }).done(function(response) {
+
+	// //checking the response
+	// console.log(response);
+
+	// //displaying the JSON in the animal buttons div as a string
+	// $("#animalButtons").text(JSON.stringify(response));
 
 
 	
-	});//closing the AJAX call
-
-
-//STEP 2: Creating buttons based on user's input (to be linked to AJAZ call later on)
-
-	//Creation of an array, that will hold related strings**add more later on
-	var topics = ["hamster", "rabbit", "cat"];
-
-	//Creation of a function that will ensure every topic in the array becomes a button
-	function renderButtons() {
-
-		//Emptying the animalButtons div so that the buttons aren't duplicated
-		$("#animalButtons").empty();
-
-		//Looping through the topics array
-		for (var i = 0; i < topics.length; i++) {
-
-			//Dynamic generation of button, for each string in the topics array
-			var newButton = $("<button>");
-
-			//giving it a class of topic
-			newButton.addClass("topic");
-
-			//giving it a data-attribute which will give it one of the strings in the topics array, based on the index
-			newButton.("data-name", topics[i]);
-
-			//giving the new button a text of the string value, based on the index
-			newButton.text(topics[i]);
-
-			//the button is added to the HTML div was emptied earlier on
-			$("#animalButtons").append(newButton);
-
-		};//closing the for loop
-
-	};//closing the renderButtons function
-
-
+	// });//closing the AJAX call
 
 
 });//closing the on-click function
 
-
+//this function is called so that the strings already present in the array are displayed
+renderButtons();
 
 });//closing the documnent.ready function
