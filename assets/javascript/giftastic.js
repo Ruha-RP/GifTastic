@@ -5,7 +5,7 @@ $(document).ready(function() {
 //***STEP 1: Displaying existing topics as buttons
 
 //Creating an Array which holds the subjects for the GIFs
-var topics = ["cat", "hamster", "pigeon"];
+var topics = ["cat", "hamster", "pigeon", "goat", "flamingo", "alligator", "turtle", "dog", "dolphin", "shark"];
 
 //Creating the renderButtons function for displaying the topics in the array as buttons. 3 steps involved: (a)emptying the div, (b)for loop, (c)button creation
 function renderButtons() {
@@ -62,40 +62,109 @@ $("#addAnimal").on("click", function(event) {
 
 //***STEP 4: Making the topic buttons extract information from the Giphy API	
 
-	//Creating a function that will transfer the info gathered from the API onto the div animalButtons
-	function gifsInfo() {
+//Creating a function that will transfer the info gathered from the API onto the div animalButtons
+function gifsInfo() {
 
-		//creating a variable that will be the user's input
-		var animal = $(this).attr("data-name");
+	//creating a variable that will be the user's input
+	var animal = $(this).attr("data-name");
 
-		//Creating the query URL, which is one of the parameters of the AJAX call. Limited to 10 results
-		var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=AkFwbCSaIKXeFXXJc1BOIfByIy9ai35t&limit=10";
+	//Creating the query URL, which is one of the parameters of the AJAX call. Limited to 10 results
+	var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=AkFwbCSaIKXeFXXJc1BOIfByIy9ai35t&limit=10";
 
-		//the AJAX call
-		$.ajax({
-			url: queryURL,
-			method: "GET"
-		}).done(function(response) {
+	//the AJAX call
+	$.ajax({
+		url: queryURL,
+		method: "GET"
+	}).done(function(response) {
 
-			//checking the response
-			console.log(response);
+		console.log(queryURL);
+		//checking the response
+		console.log(response);
 
-			//displaying the JSON in the animal buttons div as a string
-			$("#animals").text(JSON.stringify(response));
-
-			//***
-			renderButtons();
-
-		});//closing the AJAX call
-
-	};//closing gifsInfo function
+		// //displaying the JSON in the animal buttons div as a string
+		// $("#animals").text(JSON.stringify(response));
 
 
-	//creating the on-click for the topic buttons whihc will run gifsInfo function. Note the class 'singleTopic' was assigned when dynamically generating the button***
-	$(document).on("click", ".singleTopic", gifsInfo);
+
+//STEP 5: ***displaying the gif image and rating
+
+		// storing the data from the AJAX request in the results variable
+        var results = response.data;
+
+        // The result variable needs to be looped since its an array
+        for (var i = 0; i < results.length; i++) {
+
+	        // Dynamically creating a div, in a new variable whihc will hold the image and rating
+	        var animalDiv = $("<div>");
+
+	        // Creating an html paragraph which will hold the rating
+	        var gifP = $("<p>").text("Rating: " + results[i].rating);
+
+	        // Creating an image tag which will hold the gif image
+	        var gifImage = $("<img>");
+
+	        // The source of the image will be obtained from the JSON
+	        gifImage.attr("src", results[i].images.fixed_height_still.url);
+
+	        //giving each image a data-state of still
+	        gifImage.attr("data-state", "still");
+
+	        //giving each image a data still attribute
+            gifImage.attr("data-still", results[i].images.fixed_height_still.url);
+
+            //givin each image a data animate attribute
+            gifImage.attr("data-animate", results[i].images.fixed_height.url);
+
+            //giving each image a class of gif
+            gifImage.attr("class", "gif");
+
+            
+            // Appending the paragraph and image are appended to the animalDiv created above
+            animalDiv.append(gifP);
+            animalDiv.append(gifImage);
+
+            // Prependng ensures that the latest animal clicked appears above
+            $("#animals").prepend(animalDiv);
+
+		};//closing the for loop
+
+
+
+
+//STEP 6: ***PAUSING & PLAYING GIFS
+
+		 //Creating a new on-click function, when images are clicked
+			$(".gif").on("click", function() {
+
+					//creating a variable called state which will use the data-state to define the condition in an if/else statement
+					var state = $(this).attr("data-state");
+				
+					//creation of the if/else statment
+					if (state === "still") {
+						$(this).attr("src", $(this).attr("data-animate"));
+				        $(this).attr("data-state", "animate");
+					}
+					else {
+				       $(this).attr("src", $(this).attr("data-still"));
+				       $(this).attr("data-state", "still");
+					}
+				    
+			});//closing the image on click 
+   			
+		//***
+		renderButtons();
+
+	});//closing the AJAX call
+
+};//closing gifsInfo function
+
+
+//creating the on-click for the topic buttons whihc will run gifsInfo function. Note the class 'singleTopic' was assigned when dynamically generating the button***
+$(document).on("click", ".singleTopic", gifsInfo);
+
 
 
 //this function is called so that the strings already present in the array are displayed
 renderButtons();
 
-});//closing the documnent.ready function
+});//closing the document.ready function
