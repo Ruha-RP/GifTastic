@@ -27,13 +27,13 @@ function renderButtons() {
 		//adding the button to the div that was cleared earlier
 		$("#animalButtons").append(x);
 
-	};//closing th for loop
+	};//closing the for loop
 
-};//closing the renderButton function
+};//closing the renderButtons function
 
 
 
-//***STEP 2: Creating the on-click Function
+//***STEP 2: Creating the on-click Function for the submit button
 
 //Creation of an on-click event for the submit button, this will lead to the AJAX call being executed
 $("#addAnimal").on("click", function(event) {
@@ -43,7 +43,7 @@ $("#addAnimal").on("click", function(event) {
 
 
 
-//***STEP 3: Making the submit button: (a)convert user input to a button, (b)extract information from the Giphy API	
+//***STEP 3: Making the submit button convert user input to a button 
 
 
 	//Grabbing the user's input text, trimming white space and putting the information in a new variable called animal
@@ -56,27 +56,44 @@ $("#addAnimal").on("click", function(event) {
 	renderButtons();
 
 
-	// //Creating the query URL, which is one of the parameters of the AJAX call. Limited to 10 results
-	// var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=AkFwbCSaIKXeFXXJc1BOIfByIy9ai35t&limit=10"
-
-	// //the AJAX call
-	// $.ajax({
-	// 	url: queryURL,
-	// 	method: "GET"
-	// }).done(function(response) {
-
-	// //checking the response
-	// console.log(response);
-
-	// //displaying the JSON in the animal buttons div as a string
-	// $("#animalButtons").text(JSON.stringify(response));
+});//closing the on-click function for the submit button
 
 
-	
-	// });//closing the AJAX call
+
+//***STEP 4: Making the topic buttons extract information from the Giphy API	
+
+	//Creating a function that will transfer the info gathered from the API onto the div animalButtons
+	function gifsInfo() {
+
+		//creating a variable that will be the user's input
+		var animal = $(this).attr("data-name");
+
+		//Creating the query URL, which is one of the parameters of the AJAX call. Limited to 10 results
+		var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=AkFwbCSaIKXeFXXJc1BOIfByIy9ai35t&limit=10";
+
+		//the AJAX call
+		$.ajax({
+			url: queryURL,
+			method: "GET"
+		}).done(function(response) {
+
+			//checking the response
+			console.log(response);
+
+			//displaying the JSON in the animal buttons div as a string
+			$("#animals").text(JSON.stringify(response));
+
+			//***
+			renderButtons();
+
+		});//closing the AJAX call
+
+	};//closing gifsInfo function
 
 
-});//closing the on-click function
+	//creating the on-click for the topic buttons whihc will run gifsInfo function. Note the class 'singleTopic' was assigned when dynamically generating the button***
+	$(document).on("click", ".singleTopic", gifsInfo);
+
 
 //this function is called so that the strings already present in the array are displayed
 renderButtons();
